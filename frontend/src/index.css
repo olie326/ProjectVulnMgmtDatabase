@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.h-screen-minus-custom {
+  width: calc(
+    100vw - 16rem
+  ); /* Adjust 5rem to match the space above your div */
+  height: 100vh;
+  /* overflow: hidden; */
+}
+
+@media (max-width: 1024px) {
+  .h-screen-minus-custom {
+    width: 100vw; /* or any other display value that suits your needs */
+  }
+}
+
+.h-screen-minus-custom2 {
+  height: calc(
+    100vh - 4rem
+  );
+  display: flex;
+  flex-direction: column;
+  background-color: theme("colors.stone.50");
+}
