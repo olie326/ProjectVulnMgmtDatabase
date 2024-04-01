@@ -4,7 +4,7 @@ import { getData } from "../api_calls/get_data";
 import * as Checkbox from "@radix-ui/react-checkbox";
 import { CheckIcon } from "@radix-ui/react-icons";
 
-function Table({
+function depreciatedTable({
   data,
   setData,
 }: {
@@ -110,7 +110,7 @@ function Table({
   };
 
   return (
-    <ScrollArea.Root className="overflow-hidden rounded-xl border border-stone-200">
+    <ScrollArea.Root className="min-h-0 flex-1 overflow-hidden rounded-xl border border-stone-200">
       <ScrollArea.Viewport className="">
         <div className="max-h-svh">
           <table className="divide-y divide-gray-200">
@@ -145,5 +145,3 @@ function Table({
     </ScrollArea.Root>
   );
 }
-
-export default Table;

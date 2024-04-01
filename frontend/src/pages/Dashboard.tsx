@@ -1,14 +1,18 @@
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import SideNav from "../components/SideNav";
 import QueryCreator from "../components/QueryCreator";
-import Table from "../components/Table";
 // import * as Separator from "@radix-ui/react-separator";
-import * as Tabs from "@radix-ui/react-tabs";
+
 import "../index.css";
 import CrudButtons from "../components/CrudButtons";
 import { DownloadIcon, UploadIcon } from "@radix-ui/react-icons";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import DataTable from "@/components/dataTable/dataTable";
+import { Vulnerability, columns } from "@/components/dataTable/columns";
+import { getData } from "@/api_calls/get_data";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 axios.defaults.withCredentials = true;
 
@@ -20,6 +24,23 @@ function Dashboard() {
   const [assetBusinessAttributesFile, setAssetBusinessAttributesFile] =
     useState<File | undefined>();
   const [data, setData] = useState<Database[]>([]);
+  const [vuln, setVuln] = useState<Vulnerability[]>([]);
+
+  useEffect(() => {
+    setVuln(data.map((item) => item.fields));
+  }, [data]);
+
+  const authenticated = true;
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await getData();
+      setData(data);
+    };
+
+    if (authenticated === true) {
+      loadData();
+    }
+  }, [authenticated]);
 
   var formData = new FormData();
 
@@ -66,53 +87,44 @@ function Dashboard() {
   }
 
   return (
-    <>
-      <div className="flex h-lvh">
-        <SideNav />
-        <div className="h-screen-minus-custom">
-          <Navbar />
-          <div className="h-screen-minus-custom2">
-            <div className="mx-3 mb-4 flex items-center justify-between gap-3 border-b border-stone-200">
-              <Tabs.Root>
-                <Tabs.List className="inline-flex">
-                  <Tabs.Trigger
-                    className="text-mauve11 hover:text-violet11 data-[state=active]:text-violet11 flex h-10 flex-1 cursor-default select-none items-center justify-center px-5 text-sm font-medium leading-none outline-none first:rounded-tl-md last:rounded-tr-md focus:outline-none data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0] data-[state=active]:shadow-current data-[state=active]:focus:relative"
-                    value="tab1"
-                  >
-                    Database
-                  </Tabs.Trigger>
-                  <Tabs.Trigger
-                    className="text-mauve11 hover:text-violet11 data-[state=active]:text-violet11 flex h-10 flex-1 cursor-default select-none items-center justify-center px-5 text-sm font-medium leading-none outline-none first:rounded-tl-md last:rounded-tr-md focus:outline-none data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0] data-[state=active]:shadow-current data-[state=active]:focus:relative"
-                    value="tab2"
-                  >
-                    Vulnerabilities
-                  </Tabs.Trigger>
-                  <Tabs.Trigger
-                    className="text-mauve11 hover:text-violet11 data-[state=active]:text-violet11 flex h-10 flex-1 cursor-default select-none items-center justify-center px-5 text-sm font-medium leading-none outline-none first:rounded-tl-md last:rounded-tr-md focus:outline-none data-[state=active]:shadow-[inset_0_-1px_0_0,0_1px_0_0] data-[state=active]:shadow-current data-[state=active]:focus:relative"
-                    value="tab3"
-                  >
-                    Assets
-                  </Tabs.Trigger>
-                </Tabs.List>
-              </Tabs.Root>
-              <button className="mb-1 flex h-8 items-center justify-center gap-2 rounded-md bg-green-500 p-3 text-sm text-green-50 shadow-sm hover:bg-green-400 active:bg-green-600">
-                Export
-                <DownloadIcon />
-              </button>
-            </div>
-            <div className="mb-1.5 me-4 ms-4 flex h-10 items-center justify-between">
-              <div>
-                <CrudButtons />
-              </div>
-              <div className="flex h-full items-center justify-end gap-2">
-                <QueryCreator setData={setData} />
-              </div>
-            </div>
-            <div className="min-h-0 flex-1">
-              <div className="flex h-full flex-col p-4 pt-0">
+    <SideNav>
+      <div className="flex max-h-full flex-col">
+        <Navbar />
+
+        <Tabs
+          defaultValue="vulnerability"
+          className="bg-secondary box-border flex min-h-0 min-w-0 flex-col flex-col p-2"
+        >
+          <TabsList className="grid h-11 max-w-sm grid-cols-2 items-end rounded-b-none">
+            <TabsTrigger
+              value="vulnerability"
+              className="text-md px-6 py-2 shadow-none data-[state=active]:rounded-b-none data-[state=active]:shadow-none"
+            >
+              Vulnereability
+            </TabsTrigger>
+            <TabsTrigger
+              value="asset"
+              className="text-md px-6 py-2 shadow-none data-[state=active]:rounded-b-none data-[state=active]:shadow-none"
+            >
+              Asset
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="vulnerability" className="mt-0">
+            <div className="bg-background m-1 mt-0 flex min-h-0 min-w-0 flex-1 flex-col rounded-b-lg rounded-tr-lg pt-1">
+              <div className="m-3">
+                <div className="mb-3 flex h-10 items-center justify-between">
+                  <div>
+                    <CrudButtons />
+                  </div>
+                  <div className="flex min-h-0 items-center justify-end gap-2">
+                    <QueryCreator setData={setData} />
+                  </div>
+                </div>
+                {/* <div className="min-h-0 w-full min-w-0 flex-1"> */}
                 {/* content goes in here!!!! */}
 
-                <Table data={data} setData={setData}></Table>
+                <DataTable data={vuln} columns={columns}></DataTable>
 
                 {/* <form onSubmit={onSubmit}>
                   <div>
@@ -151,12 +163,18 @@ function Dashboard() {
                     Upload
                   </button>
                 </form> */}
+                {/* </div> */}
               </div>
             </div>
-          </div>
-        </div>
+          </TabsContent>
+          <TabsContent value="asset" className="mt-0">
+            <div className="bg-background m-1 mt-0 flex min-h-0 min-w-0 flex-1 flex-col rounded-b-lg rounded-tr-lg pt-1">
+              <h1 className="text-4xl">Some Cool Assets !!!!</h1>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
-    </>
+    </SideNav>
   );
 }
 

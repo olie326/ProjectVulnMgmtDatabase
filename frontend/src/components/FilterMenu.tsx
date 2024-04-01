@@ -9,6 +9,7 @@ import * as Select from "@radix-ui/react-select";
 import SelectDropdown from "./Dropdown";
 import { PostFilters } from "../api_calls/APIcalls";
 import axios from "axios";
+import { Button } from "./ui/button";
 
 axios.defaults.withCredentials = true;
 
@@ -88,10 +89,10 @@ const FilterMenu = ({
         }}
       >
         <Dialog.Trigger>
-          <button className="flex h-8 items-center justify-center gap-2 rounded-md border border-stone-200 bg-white p-3 text-sm shadow-sm hover:bg-stone-200 active:bg-stone-300">
-            <MixerHorizontalIcon />
+          <Button variant="outline">
+            <MixerHorizontalIcon className="mr-2 h-4 w-4" />
             Filters
-          </button>
+          </Button>
         </Dialog.Trigger>
         <Dialog.Portal>
           <Dialog.Overlay className="data-[state=open]:animate-overlayShow fixed inset-0 z-20 bg-black opacity-20" />

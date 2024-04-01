@@ -3,11 +3,6 @@ import axios from 'axios';
 axios.defaults.withCredentials = true;
 
 const getData = async () => {
-    interface Database {
-        fields: Object,
-        model: string,
-        pk: Number
-      }
     
     var data= <Database[]>[];
     await axios

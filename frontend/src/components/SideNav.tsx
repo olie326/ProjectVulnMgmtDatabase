@@ -1,72 +1,84 @@
-import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import {
   HomeIcon,
   GearIcon,
   BarChartIcon,
   FileTextIcon,
   NotionLogoIcon,
+  ExitIcon,
 } from "@radix-ui/react-icons";
 
-export default function SideNav() {
+import * as Tabs from "@radix-ui/react-tabs";
+
+import { Button } from "./ui/button";
+import { ReactNode } from "react";
+
+export default function SideNav({ children }: { children: ReactNode }) {
   return (
-    <div className="hidden h-full lg:block">
-      <div className="flex h-full w-64 flex-none flex-col justify-between border-e border-stone-100">
-        <NavigationMenu.Root className="px-3 py-5">
-          <div className="mb-6 mt-1 flex items-center justify-start gap-3 px-3 text-stone-900">
-            <a href="#" className="-m-1.5 p-1.5">
-              <span className="sr-only">Internal Tool</span>
-              <NotionLogoIcon height={30} width={30} />
-            </a>
-            <h2 className="text-2xl font-bold ">Internal Tool</h2>
+    <>
+      <Tabs.Root className="flex w-screen" orientation="vertical">
+        <div className="sticky top-0 flex h-svh flex-col justify-between p-2 lg:min-w-48">
+          <div>
+            <div className="m-3 mb-12 flex items-center justify-center lg:justify-between lg:gap-3">
+              <NotionLogoIcon height={32} width={32} />
+              <h1 className="text-2xl font-extrabold tracking-tight lg:text-2xl">
+                <p className="hidden lg:block">Internal Tool</p>
+              </h1>
+            </div>
+            <Tabs.List className="flex flex-col gap-1">
+              <Tabs.Trigger value="home">
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="min-w-full gap-3 px-3 lg:justify-start lg:ps-3"
+                >
+                  <HomeIcon height={20} width={20} />
+
+                  <p className="hidden lg:block">Home</p>
+                </Button>
+              </Tabs.Trigger>
+              <Tabs.Trigger value="database">
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="min-w-full gap-3 px-3 lg:justify-start lg:ps-3"
+                >
+                  <FileTextIcon height={20} width={20} />
+                  <p className="hidden lg:block">Database</p>
+                </Button>
+              </Tabs.Trigger>
+              <Tabs.Trigger value="graphs">
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="min-w-full gap-3 px-3 lg:justify-start lg:ps-3"
+                >
+                  <BarChartIcon height={20} width={20} />
+                  <p className="hidden lg:block">Graphs</p>
+                </Button>
+              </Tabs.Trigger>
+              <Tabs.Trigger value="settings">
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="min-w-full gap-3 px-3 lg:justify-start lg:ps-3"
+                >
+                  <GearIcon height={20} width={20} />
+                  <p className="hidden lg:block">Settings</p>
+                </Button>
+              </Tabs.Trigger>
+            </Tabs.List>
           </div>
-          <NavigationMenu.List className="text-greenwhite-300 flex flex-col gap-1 text-sm text-stone-600">
-            <NavigationMenu.Item className="">
-              <NavigationMenu.Trigger className="flex w-full items-center justify-start gap-5 rounded-xl px-3 py-2 hover:bg-stone-100 hover:text-stone-900">
-                <HomeIcon width={15} height={15} viewBox="0 -0.5 15 15" />
-                Home
-              </NavigationMenu.Trigger>
-              <NavigationMenu.Content>
-                <NavigationMenu.Link />
-              </NavigationMenu.Content>
-            </NavigationMenu.Item>
 
-            <NavigationMenu.Item className="">
-              <NavigationMenu.Trigger className="flex w-full items-center justify-start gap-5 rounded-xl px-3 py-2 hover:bg-stone-100 hover:text-stone-900">
-                <GearIcon width={15} height={15} />
-                Settings
-              </NavigationMenu.Trigger>
-              <NavigationMenu.Content>
-                <NavigationMenu.Link />
-              </NavigationMenu.Content>
-            </NavigationMenu.Item>
+          <Button size="lg" className="flex gap-2 p-0">
+            <ExitIcon height={20} width={20} />
+            <p className="hidden lg:block">Log out</p>
+          </Button>
+        </div>
 
-            <NavigationMenu.Item className="">
-              <NavigationMenu.Trigger className="flex w-full items-center justify-start gap-5 rounded-xl px-3 py-2 hover:bg-stone-100 hover:text-stone-900">
-                <BarChartIcon width={15} height={15} />
-                Graphs
-              </NavigationMenu.Trigger>
-              <NavigationMenu.Content>
-                <NavigationMenu.Link />
-              </NavigationMenu.Content>
-            </NavigationMenu.Item>
-
-            <NavigationMenu.Item className="">
-              <NavigationMenu.Trigger className="flex w-full items-center justify-start gap-5 rounded-xl px-3 py-2 hover:bg-stone-100 hover:text-stone-900">
-                <FileTextIcon width={15} height={15} />
-                Reports
-              </NavigationMenu.Trigger>
-              <NavigationMenu.Content>
-                <NavigationMenu.Link />
-              </NavigationMenu.Content>
-            </NavigationMenu.Item>
-          </NavigationMenu.List>
-
-          <NavigationMenu.Viewport />
-        </NavigationMenu.Root>
-        <button className="bg-seagreen-600 m-3 rounded-xl p-3">
-          Upload/Update Data
-        </button>
-      </div>
-    </div>
+        <Tabs.Content value="database" className="min-h-0 min-w-0 flex-1">
+          {children}
+        </Tabs.Content>
+      </Tabs.Root>
+    </>
   );
 }
