@@ -1,6 +1,10 @@
-import LoginForm from "./LoginForm";
+import { useState } from "react";
+import LoginForm from "./authentication/LoginForm";
+import SignUpForm from "./authentication/SignUpForm";
 
 export default function Hero() {
+  const [currentForm, setCurrentForm] = useState("signIn");
+
   return (
     <>
       <div className="flex h-svh flex-row">
@@ -14,8 +18,12 @@ export default function Hero() {
             </h1>
           </div>
         </div>
-        <div className="w-5/12">
-          <LoginForm />
+        <div className="flex w-5/12 flex-col items-center justify-center">
+          {currentForm === "signIn" ? (
+            <LoginForm setCurrentForm={setCurrentForm} />
+          ) : (
+            <SignUpForm setCurrentForm={setCurrentForm} />
+          )}
         </div>
       </div>
     </>

@@ -205,11 +205,21 @@ def set_vulnerability(dataframe):
 
 
 class init_send_database(APIView):
-    def get(self, request):
-        ag_data = Vulnerability.objects.select_related('asset', 'definition').all()
+    def post(self, request):
+        variant = request.data.get("variant")
+        print(request.data)
+        print(variant)
+        
+        if variant == "Vulnerability":
+            data = serializers.serialize('json', Vulnerability.objects.select_related('asset', 'definition').all()[:100])
 
-        data = serializers.serialize('json', Vulnerability.objects.select_related('asset', 'definition').all()[:100])
-
+        elif variant == "Asset":
+                        data = serializers.serialize('json', Asset.objects.all()[:100])
+        elif variant == "Definition":
+                         data = serializers.serialize('json', Definition.objects.all())
+        else:
+             return Response("Table type error!")
+        
         print("data serialized!")
 
         return Response(data)
@@ -264,3 +274,12 @@ def filterData(request):
     print(vulnFilters)
     print("recieved filter post request!")
     return Response(filteredData)
+
+
+@api_view(['POST'])
+def file_test(request):
+     print(request.FILES)
+     return Response("success!")
+
+def create_account(request):
+     pass

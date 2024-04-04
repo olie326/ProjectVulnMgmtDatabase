@@ -1,7 +1,7 @@
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
-axios.defaults.xsrfHeaderName = "X-XSRF-TOKEN"
+axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 
 const PostFilters = async (filterState: string[][]) => {
@@ -33,5 +33,18 @@ const PostFilters = async (filterState: string[][]) => {
       console.log(filtered_data)
       return filtered_data;
   };
+
+export function sendData(formData: FormData) {
+  axios
+  .post("http://127.0.0.1:8000/api/filetest", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  })
+  .then((response) => {
+    console.log(response.data);
+    console.log("yassss");
+  });
+}
 
 export { PostFilters }

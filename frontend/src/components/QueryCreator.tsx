@@ -1,11 +1,15 @@
 import axios from "axios";
-import { getData } from "../api_calls/get_data";
-import { SetStateAction, useEffect, useState } from "react";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { useEffect, useState } from "react";
+import {
+  MagnifyingGlassIcon,
+  MixerHorizontalIcon,
+} from "@radix-ui/react-icons";
 import FilterMenu from "./FilterMenu";
-import { Vulnerability } from "./dataTable/columns";
 import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
+import { vulnerability } from "./dataTable/Types/vulnerability";
+import { asset } from "./dataTable/Types/asset";
+import { definition } from "./dataTable/Types/definition";
 
 axios.defaults.withCredentials = true;
 
@@ -16,7 +20,7 @@ declare global {
     };
   }
   interface Database {
-    fields: Vulnerability;
+    fields: vulnerability | asset | definition;
     model: string;
     pk: Number;
   }
@@ -27,14 +31,6 @@ export default function QueryCreator({
 }: {
   setData: React.Dispatch<React.SetStateAction<any>>;
 }) {
-  const onClick = async () => {
-    const yass = await getData().then((response) => {
-      setData(response);
-      console.log(response);
-      console.log("logged!");
-    });
-  };
-
   const [values, setValues] = useState<string[][]>([[]]);
 
   const select_options: options = {
@@ -76,20 +72,15 @@ export default function QueryCreator({
 
   return (
     <>
-      <FilterMenu
+      {/* <FilterMenu
         setValues={setValues}
         values={values}
         options={select_options}
         setData={setData}
-      />
+      /> */}
 
       <Input type="text" placeholder="Search" />
-      <Button
-        variant="default"
-        size="icon"
-        className="absolute end-7 h-7 w-7"
-        onClick={onClick}
-      >
+      <Button variant="default" size="icon" className="absolute end-7 h-7 w-7">
         <MagnifyingGlassIcon height={15} width={15} />
       </Button>
 

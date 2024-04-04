@@ -2,14 +2,15 @@ import axios from 'axios';
 
 axios.defaults.withCredentials = true;
 
-const getData = async () => {
+const getData = async (variant: "Vulnerability" | "Asset" | "Definition") => {
     
     var data= <Database[]>[];
     await axios
-      .get("http://127.0.0.1:8000/api/getDatabase", {
+      .post("http://127.0.0.1:8000/api/getDatabase", {
         headers: {
           "Content-Type": "application/json",
         },
+          variant: variant
       })
       .then((response) => {
         data = JSON.parse(response.data);

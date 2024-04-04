@@ -1,4 +1,5 @@
 from django.db import models
+# from django.contrib.auth.models import AbstractUser
 
 
 # Create your models here.
@@ -97,4 +98,9 @@ class Vulnerability(models.Model):
     risk_modified = models.CharField(max_length=4, null=True)
     severity = models.CharField(max_length=8, null=True)
     state = models.CharField(max_length=10, null=True)
+
+
+# class User(AbstractUser):
+    
+#     pass
     
