@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@radix-ui/react-icons";
 import {
   Popover,
@@ -8,40 +7,30 @@ import {
 
 import {
   Command,
-  CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
-  CommandShortcut,
 } from "@/components/ui/command";
-import {
-  Column,
-  ColumnDef,
-  ColumnFilter,
-  HeaderGroup,
-  Table,
-  flexRender,
-} from "@tanstack/react-table";
-import { Badge, badgeVariants } from "@/components/ui/badge";
-import FilterBadge from "./filterBadge";
+import { badgeVariants } from "@/components/ui/badge";
+import { useState } from "react";
+import { filterContext } from "./filters";
 
 // takes in an array of the filterable columns columnDefs
 export default function AddFilter({
   //   column,
-  table,
-  active,
-  setActive,
+  filters,
+  setFilters,
 }: {
   //   column: Column<any, unknown>;
-  table: Table<any>;
-  active: unknown[];
-  setActive: React.Dispatch<any[]>;
+  filters: filterContext;
+  setFilters: React.Dispatch<filterContext>;
 }) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button className={badgeVariants({ variant: "secondary" })}>
           Add Filter
@@ -54,31 +43,29 @@ export default function AddFilter({
           <CommandGroup>
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
-              {table.getHeaderGroups().map((headerGroup) =>
-                headerGroup.headers.map((header) =>
-                  header.index !== 0 ? (
-                    <CommandItem
-                      key={header.id}
-                      value={header.column.id}
-                      onSelect={() => {
-                        console.log(header);
-                        setActive([...active, header.id]);
-                        // table.setColumnFilters([
-                        //   ...table.getState().columnFilters,
-                        //   {
-                        //     id: header.column.id,
-                        //     value: "0",
-                        //   } as ColumnFilter,
-                        // ]);
-                      }}
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                    </CommandItem>
-                  ) : null
-                )
+              {filters.filters.map((filter) =>
+                !filter.active ? (
+                  <CommandItem
+                    key={filter.id}
+                    value={filter.id}
+                    onSelect={() => {
+                      const newFilters = [...filters.filters];
+                      const newActive = [...filters.active];
+                      const filterIndex = newFilters.findIndex(
+                        (item) => item.id == filter.id
+                      );
+                      if (filterIndex > -1) {
+                        newFilters[filterIndex].active = true;
+                      }
+                      newActive.push(filters.filters[filterIndex]);
+
+                      setFilters({ filters: newFilters, active: newActive });
+                      setOpen(false);
+                    }}
+                  >
+                    {filter.id}
+                  </CommandItem>
+                ) : null
               )}
               <CommandItem>Something else</CommandItem>
             </CommandList>

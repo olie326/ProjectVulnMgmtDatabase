@@ -1,8 +1,10 @@
-import { createColumnHelper } from "@tanstack/react-table";
+import { CellContext, Row, createColumnHelper } from "@tanstack/react-table";
 import { Checkbox } from "../ui/checkbox";
 import { Vulnerability } from "./Types/vulnerability";
 import { Asset } from "./Types/asset";
 import { Definition } from "./Types/definition";
+import { Interval, interval, isWithinInterval } from "date-fns";
+import { DateRange } from "react-day-picker";
 
 const vulnerabilityProps = [
   "vulnerability_id",
@@ -78,6 +80,31 @@ const definitionProps = [
   "vpr_drivers_threat_sources",
   "vpr_score",
 ];
+
+export const dateProps = [
+  "first_observed",
+  "last_seen",
+  "last_authenticated_scan_time",
+  "last_licensed_scan_time",
+  "last_observed",
+  "last_scan_time",
+  "date_record_added",
+  "patch_published",
+  "vulnerability_published",
+];
+
+function inDateRangeFilter<T>(
+  row: Row<T>,
+  columnId: string,
+  filterValue: DateRange,
+  addMeta: (meta: any) => void
+): boolean {
+  const date = row.getValue(columnId) as Date;
+  return filterValue.from && filterValue.to
+    ? isWithinInterval(date, interval(filterValue.from, filterValue.to))
+    : false;
+}
+
 //init default objects for filters
 const defaultVulnerability = new Vulnerability();
 const defaultAsset = new Asset();
@@ -92,6 +119,8 @@ function filterFnSpecifier(key: string) {
       return "includesString";
     } else if (keyType === "number") {
       return "inNumberRange";
+    } else if (keyType === "object") {
+      return inDateRangeFilter;
     }
   }
 }
@@ -104,10 +133,10 @@ const selectColumn = columnHelper.display({
     return (
       <Checkbox
         checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
+          table.getIsAllRowsSelected() ||
+          (table.getIsSomeRowsSelected() && "indeterminate")
         }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        onCheckedChange={(value) => table.toggleAllRowsSelected(!!value)}
         aria-label="Select all"
       />
     );
@@ -127,7 +156,10 @@ export const assetColumns = [
   ...Object.keys(defaultAsset).map((key) =>
     columnHelper.accessor(key, {
       header: key.replace("_", " ").toString(),
-      cell: (info) => info.getValue(),
+      cell: (info) =>
+        dateProps.includes(key)
+          ? info.getValue<Date>()?.toUTCString()
+          : info.getValue(),
       filterFn: filterFnSpecifier(key),
     })
   ),
@@ -138,7 +170,10 @@ export const definitionColumns = [
   ...definitionProps.map((prop) =>
     columnHelper.accessor(prop, {
       header: prop.replace("_", " "),
-      cell: (info) => info.getValue(),
+      cell: (info) =>
+        dateProps.includes(prop)
+          ? info.getValue<Date>()?.toUTCString()
+          : info.getValue(),
     })
   ),
 ];
@@ -161,11 +196,11 @@ export const vulnColumns = [
   }),
   columnHelper.accessor("first_observed", {
     header: "First Observed",
-    cell: (info) => info.getValue(),
+    cell: (info) => info.getValue<Date>().toUTCString(),
   }),
   columnHelper.accessor("last_seen", {
     header: "Last Seen",
-    cell: (info) => info.getValue(),
+    cell: (info) => info.getValue<Date>().toUTCString(),
   }),
   columnHelper.accessor("output", {
     header: "Output",

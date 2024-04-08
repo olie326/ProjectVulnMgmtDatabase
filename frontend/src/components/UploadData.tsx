@@ -18,15 +18,18 @@ import {
 } from "@/components/ui/form";
 
 import { Button } from "./ui/button";
-import { UploadIcon } from "@radix-ui/react-icons";
+import { CheckIcon, ReloadIcon, UploadIcon } from "@radix-ui/react-icons";
 
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { sendData } from "@/api_calls/APIcalls";
 import { Input } from "./ui/input";
 import { DialogClose } from "@radix-ui/react-dialog";
+import { useState } from "react";
 
 export default function UploadData() {
+  const [loading, setLoading] = useState<boolean | null>(null);
+
   const form = useForm<z.infer<typeof fileSchema>>({
     mode: "onSubmit",
   });
@@ -39,6 +42,7 @@ export default function UploadData() {
 
   function onUpload(fileList: z.infer<typeof fileSchema>) {
     console.log(fileList);
+    setLoading(true);
     const formData = new FormData();
 
     formData.append("vulnListFile", fileList.vulnListFile);
@@ -49,7 +53,14 @@ export default function UploadData() {
     );
 
     console.log(formData);
-    sendData(formData);
+    sendData(formData).then((response) => {
+      if (response) {
+        console.log(response);
+        setLoading(false);
+      } else {
+        setLoading(null);
+      }
+    });
   }
   return (
     <>
@@ -166,12 +177,25 @@ export default function UploadData() {
                   </FormItem>
                 )}
               />
-              <div className="flex w-full flex-row justify-end">
-                <DialogClose asChild>
-                  <Button type="submit" className="">
+              <div className="flex w-full flex-row justify-between">
+                <div>
+                  {loading === false ? (
+                    <small className="inline-flex text-green-400">
+                      Uploaded
+                      <CheckIcon className="ml-2" />{" "}
+                    </small>
+                  ) : null}
+                </div>
+                {/* <DialogClose asChild> */}
+                {loading === true ? (
+                  <Button type="submit" disabled>
+                    <ReloadIcon className="mr-2 animate-spin" />
                     Upload
                   </Button>
-                </DialogClose>
+                ) : (
+                  <Button type="submit">Upload</Button>
+                )}
+                {/* </DialogClose> */}
               </div>
             </form>
           </Form>

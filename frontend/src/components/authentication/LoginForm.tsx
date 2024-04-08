@@ -13,27 +13,37 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { logIn } from "@/api_calls/APIcalls";
+import { userContext } from "@/App";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
-export const userSchema = z.object({
-  username: z.string().email(),
-  password: z.string(),
-});
+export const userSchema = z
+  .object({
+    username: z.string(),
+    password: z.string(),
+  })
+  .required();
 
 export default function LoginForm({
   setCurrentForm,
 }: {
   setCurrentForm: React.Dispatch<React.SetStateAction<string>>;
 }) {
+  const [authenticated, setAuthenticated] = useContext(userContext);
+  const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof userSchema>>({
     resolver: zodResolver(userSchema),
-    defaultValues: {
-      username: "",
-      password: "",
-    },
   });
 
-  function onSubmit(values: z.infer<typeof userSchema>) {
+  async function onSubmit(values: z.infer<typeof userSchema>) {
     console.log(values);
+    const response = await logIn(values);
+    if (response.status == 200) {
+      setAuthenticated(true);
+      navigate("/dashboard");
+    }
   }
 
   return (
@@ -69,7 +79,7 @@ export default function LoginForm({
                 <FormMessage />
               </FormItem>
             )}
-          />{" "}
+          />
           <FormField
             control={form.control}
             name="password"
@@ -77,7 +87,7 @@ export default function LoginForm({
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input placeholder="Password" {...field} />
+                  <Input type="password" placeholder="Password" {...field} />
                 </FormControl>
                 <FormDescription>This is your password.</FormDescription>
                 <FormMessage />

@@ -3,7 +3,7 @@ import CrudButtons from "@/components/CrudButtons";
 import QueryCreator from "@/components/QueryCreator";
 
 import DataTable from "@/components/dataTable/dataTable";
-import Filters from "@/components/dataTable/Filters/filters";
+
 import { useEffect, useState } from "react";
 import { asset } from "@/components/dataTable/Types/asset";
 import { assetColumns } from "@/components/dataTable/columns";

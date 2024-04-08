@@ -1,12 +1,18 @@
 from django.db import models
+from django.contrib.auth.models import User
 # from django.contrib.auth.models import AbstractUser
 
 
 # Create your models here.
 
+#Auth Profile
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+
 class Definition(models.Model):
     # unique
     definition_id = models.IntegerField(unique=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="definition")
 
     cve = models.CharField(max_length=255, null=True)
     description = models.TextField(null=True)
@@ -48,6 +54,7 @@ class Definition(models.Model):
 class Asset(models.Model):
     # from vul list
     name = models.CharField(max_length=50, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="asset")
 
     display_ipv4_address = models.CharField(max_length=30, null=True)
     asset_id = models.CharField(max_length=100, unique=True, null=True)
@@ -88,6 +95,7 @@ class Asset(models.Model):
 class Vulnerability(models.Model):
     # unique
     vulnerability_id = models.CharField(max_length=50, unique=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="vulnerability")
     #connections
     definition = models.ForeignKey(Definition, on_delete=models.RESTRICT, null=True)
     asset = models.ForeignKey(Asset, on_delete=models.RESTRICT, null=True)
@@ -99,8 +107,3 @@ class Vulnerability(models.Model):
     severity = models.CharField(max_length=8, null=True)
     state = models.CharField(max_length=10, null=True)
 
-
-# class User(AbstractUser):
-    
-#     pass
-    

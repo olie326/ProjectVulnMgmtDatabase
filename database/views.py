@@ -4,17 +4,26 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 import numpy as np
 import pandas as pd
-from .models import Asset, Definition, Vulnerability
+from .models import Asset, Definition, Vulnerability, UserProfile
 from django.core import serializers
 from rest_framework.decorators import api_view
 import json
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, get_user
+from rest_framework.permissions import IsAuthenticated
+
+
 
 class database_upload(APIView):
     def post(self, request):
 
         print('Loading...')
+
+        user = get_user(request)
+        print(user)
+        print(request.auth)
 
         # Loading Files
 
@@ -74,15 +83,15 @@ class database_upload(APIView):
         print('vulnerability list processed!')
     # --- creating definition (cvss2, cvss3, vpr) objects ---
 
-        set_definition(definition_subset_df)
+        set_definition(definition_subset_df, user)
 
         print('definitions created!')
     # --- entering assets into database ---
-        set_asset(asset_combined_df)
+        set_asset(asset_combined_df, user)
 
         print('assets created!')
 
-        set_vulnerability(vulnList_df)
+        set_vulnerability(vulnList_df, user)
         
         print('vulnerabilities created!')
         print('done!')
@@ -90,11 +99,12 @@ class database_upload(APIView):
         return Response('response successful!')
 
 
-def set_asset(dataframe):
+def set_asset(dataframe, user):
 
     print('setting assets...')
 
     objList = [Asset(
+            user=user,
             display_ipv4_address=row['display_ipv4_address'],
             asset_id=row['id'],
             name=row['new_name'],
@@ -131,11 +141,12 @@ def set_asset(dataframe):
 
 
 
-def set_definition(dataframe):
+def set_definition(dataframe, user):
 
     print('setting definitions...')
 
     definitionObjectList = [Definition(
+            user=user,
             cve = row['definition.cve'],
             description = row['definition.description'],
             exploitability_ease = row['definition.exploitability_ease'],
@@ -183,11 +194,12 @@ def set_definition(dataframe):
 
 
 
-def set_vulnerability(dataframe):
+def set_vulnerability(dataframe, user):
 
     print('setting vulnerabilities...')
 
     vulnObjectList = [Vulnerability(
+        user=user,
         definition=Definition.objects.get(definition_id=row['definition.id']),
         asset= Asset.objects.get(name=row['asset.name']) if Asset.objects.filter(name=row['asset.name']).exists() else None,
         first_observed=row['first_observed'],
@@ -209,14 +221,18 @@ class init_send_database(APIView):
         variant = request.data.get("variant")
         print(request.data)
         print(variant)
+
+        user = get_user(request)
         
         if variant == "Vulnerability":
-            data = serializers.serialize('json', Vulnerability.objects.select_related('asset', 'definition').all()[:100])
+            data = serializers.serialize('json', Vulnerability.objects.select_related('asset', 'definition').filter(user=user).all())
+
 
         elif variant == "Asset":
-                        data = serializers.serialize('json', Asset.objects.all()[:100])
+                        data = serializers.serialize('json', Asset.objects.filter(user=user).all())
         elif variant == "Definition":
-                         data = serializers.serialize('json', Definition.objects.all())
+                        data = serializers.serialize('json', Definition.objects.filter(user=user))
+                      
         else:
              return Response("Table type error!")
         
@@ -278,8 +294,18 @@ def filterData(request):
 
 @api_view(['POST'])
 def file_test(request):
-     print(request.FILES)
-     return Response("success!")
+    print(request.FILES)
+    return Response("success!")
 
-def create_account(request):
-     pass
+@api_view(['POST'])
+def sign_up(request):
+
+    print("creating user...")
+    userData = json.loads(request.body.decode('UTF-8'))
+    
+
+    user = User.objects.create_user(**userData)
+    UserProfile.objects.create(user=user)
+
+    return Response("New account created!")
+

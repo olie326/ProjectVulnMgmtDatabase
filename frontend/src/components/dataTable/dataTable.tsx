@@ -85,24 +85,33 @@ export default function DataTable<TData>({
           <TableBody>
             {table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="max-h-40">
-                    <HoverCard>
-                      <HoverCardTrigger className="line-clamp-3">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </HoverCardTrigger>
-                      <HoverCardContent>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </HoverCardContent>
-                    </HoverCard>
-                  </TableCell>
-                ))}
+                {row.getVisibleCells().map((cell) =>
+                  cell.column.columnDef.id == "select" ? (
+                    <TableCell key={cell.id} className="max-h-40">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ) : (
+                    <TableCell key={cell.id} className="max-h-40">
+                      <HoverCard>
+                        <HoverCardTrigger className="line-clamp-3">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </HoverCardTrigger>
+                        <HoverCardContent>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </HoverCardContent>
+                      </HoverCard>
+                    </TableCell>
+                  )
+                )}
               </TableRow>
             ))}
           </TableBody>

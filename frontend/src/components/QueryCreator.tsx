@@ -7,9 +7,12 @@ import {
 import FilterMenu from "./FilterMenu";
 import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
-import { vulnerability } from "./dataTable/Types/vulnerability";
-import { asset } from "./dataTable/Types/asset";
-import { definition } from "./dataTable/Types/definition";
+import {
+  vulnerability,
+  vulnerabilityRaw,
+} from "./dataTable/Types/vulnerability";
+import { asset, AssetRaw } from "./dataTable/Types/asset";
+import { DefinitionRaw, definition } from "./dataTable/Types/definition";
 
 axios.defaults.withCredentials = true;
 
@@ -21,7 +24,12 @@ declare global {
   }
   interface Database {
     fields: vulnerability | asset | definition;
-    model: string;
+    model: "database.vulnerability" | "database.asset" | "database.definition";
+    pk: Number;
+  }
+  interface DatabaseRaw {
+    fields: vulnerabilityRaw | AssetRaw | DefinitionRaw;
+    model: "database.vulnerability" | "database.asset" | "database.definition";
     pk: Number;
   }
 }

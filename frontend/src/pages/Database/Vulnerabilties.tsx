@@ -18,8 +18,6 @@ export default function Vulnerabilities() {
     // if (data.every((value) => value.fields.type === "Vulnerability")) {
     setVuln(data.map((value) => value.fields as vulnerability));
     // }
-    console.log(data.length, "data changed!!!!!");
-    console.log(vuln);
   }, [data]);
 
   return (

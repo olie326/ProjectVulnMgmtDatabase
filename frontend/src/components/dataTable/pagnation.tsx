@@ -16,7 +16,7 @@ export default function TablePagination({ table }: { table: Table<any> }) {
   return (
     <Pagination>
       <PaginationContent>
-        <PaginationItem>
+        <PaginationItem key="previous">
           <PaginationPrevious
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
@@ -24,7 +24,7 @@ export default function TablePagination({ table }: { table: Table<any> }) {
         </PaginationItem>
         {pages.length < 3
           ? pages.map((index) => (
-              <PaginationItem>
+              <PaginationItem key={index}>
                 <PaginationButton
                   isActive={index === currPage}
                   onClick={() => table.setPageIndex(index)}
@@ -37,7 +37,7 @@ export default function TablePagination({ table }: { table: Table<any> }) {
               index === currPage ||
               index === currPage - 1 ||
               index === currPage + 1 ? (
-                <PaginationItem>
+                <PaginationItem key={index}>
                   <PaginationButton
                     isActive={index === table.getState().pagination.pageIndex}
                     onClick={() => table.setPageIndex(index)}
@@ -48,10 +48,10 @@ export default function TablePagination({ table }: { table: Table<any> }) {
               ) : null
             )}
 
-        <PaginationItem>
+        <PaginationItem key="ellipsis">
           <PaginationEllipsis />
         </PaginationItem>
-        <PaginationItem>
+        <PaginationItem key="next">
           <PaginationNext
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}

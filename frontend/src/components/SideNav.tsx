@@ -11,10 +11,16 @@ import {
 import * as Tabs from "@radix-ui/react-tabs";
 
 import { Button } from "./ui/button";
-import { ReactNode } from "react";
+import { ReactNode, useContext } from "react";
 import UploadData from "./UploadData";
+import { userContext } from "@/App";
+import { logout } from "@/api_calls/APIcalls";
+import { useNavigate } from "react-router-dom";
 
 export default function SideNav({ children }: { children: ReactNode }) {
+  const [authenticated, setAuthenticated] = useContext(userContext);
+  const nagivate = useNavigate();
+
   return (
     <>
       <Tabs.Root className="flex w-screen" orientation="vertical">
@@ -72,7 +78,16 @@ export default function SideNav({ children }: { children: ReactNode }) {
           </div>
           <div className="flex w-full flex-col items-center gap-2">
             <UploadData />
-            <Button size="lg" className="h-10 w-10 px-0 lg:w-full lg:px-8">
+            <Button
+              size="lg"
+              className="h-10 w-10 px-0 lg:w-full lg:px-8"
+              onClick={() => {
+                logout().then(() => {
+                  setAuthenticated(false);
+                  nagivate("/login");
+                });
+              }}
+            >
               <ExitIcon height={20} width={20} />
               <p className="hidden lg:block">Log out</p>
             </Button>
