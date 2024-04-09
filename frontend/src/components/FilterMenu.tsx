@@ -75,7 +75,7 @@ const FilterMenu = ({
   values: string[][];
   setValues: React.Dispatch<React.SetStateAction<any>>;
   options: options;
-  setData: React.Dispatch<React.SetStateAction<Database>>;
+  setData: React.Dispatch<React.SetStateAction<Data>>;
 }) => {
   const [open, setOpen] = useState(false);
 

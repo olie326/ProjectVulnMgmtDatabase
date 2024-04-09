@@ -2,6 +2,8 @@ import { newUserSchema } from "@/components/authentication/SignUpForm";
 import { userSchema } from "@/components/authentication/LoginForm";
 import axios from "axios";
 import { z } from "zod";
+import { selectSchema } from "@/components/CrudButtons";
+import { ValueSetter } from "node_modules/date-fns/parse/_lib/Setter";
 
 axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
@@ -86,4 +88,46 @@ const getUser = async () => {
   return response.data;
 };
 
-export { PostFilters, signUp, logIn, logout, getUser };
+const updateRemediation = async (
+  status: z.infer<typeof selectSchema>,
+  Rows: {}
+) => {
+  const value = status.status;
+
+  const rows = Object.keys(Rows);
+  const response = await axios.post(
+    "http://127.0.0.1:8000/api/remediation_update",
+    {
+      value: value,
+      rows: rows,
+    }
+  );
+  return response;
+};
+
+const deleteRows = async (
+  variant: "Vulnerability" | "Asset" | "Definition",
+  Rows: {}
+) => {
+  const rows = Object.keys(Rows);
+  const response = await axios.post("http://127.0.0.1:8000/api/delete_rows", {
+    variant: variant,
+    rows: rows,
+  });
+  return response;
+};
+
+const getAge = async () => {
+  axios.get("http://127.0.0.1:8000/api/avg_vulnerability_age");
+};
+
+export {
+  PostFilters,
+  signUp,
+  logIn,
+  logout,
+  getUser,
+  updateRemediation,
+  deleteRows,
+  getAge,
+};

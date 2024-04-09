@@ -1,42 +1,66 @@
 import {
   isVulnerabilityRaw,
   vulnerability,
+  vulnerabilityRaw,
 } from "@/components/dataTable/Types/vulnerability";
 import { parse, parseJSON } from "date-fns";
 import axios from "axios";
 import {
+  DefinitionRaw,
   definition,
   isDefinitionRaw,
 } from "@/components/dataTable/Types/definition";
-import { asset, isAssetRaw } from "@/components/dataTable/Types/asset";
+import {
+  AssetRaw,
+  asset,
+  isAssetRaw,
+} from "@/components/dataTable/Types/asset";
 
 axios.defaults.withCredentials = true;
 
-const getData = async (variant: "Vulnerability" | "Asset" | "Definition") => {
-  var data: Database[] = [];
-  await axios
-    .post<string>("http://127.0.0.1:8000/api/getDatabase", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      variant: variant,
-    })
-    .then((response) => {
-      const temp: DatabaseRaw[] = JSON.parse(response.data);
+declare global {
+  interface options {
+    [cateory: string]: {
+      [option: string]: string[];
+    };
+  }
+  interface Data {
+    vulnerability: vulnerability[];
+    asset: asset[];
+    definition: definition[];
+  }
+  interface DataRaw {
+    vulnerability: vulnerabilityRaw[];
+    asset: AssetRaw[];
+    definition: DefinitionRaw[];
+  }
+}
 
-      data = temp.map((raw) => toDatabase(raw));
-    });
+const getData = async () => {
+  const response = await axios.get("http://127.0.0.1:8000/api/getData");
+  console.log(response);
+  const rawData: DataRaw = response.data;
 
-  return data;
+  const vulnerabilities = rawData.vulnerability.map((raw) => toDatabase(raw));
+  const assets = rawData.asset.map((raw) => toDatabase(raw));
+  const definitions = rawData.definition.map((raw) => toDatabase(raw));
+
+  return {
+    vulnerability: vulnerabilities,
+    asset: assets,
+    definition: definitions,
+  } as Data;
 };
 
-function toDatabase(data: DatabaseRaw): Database {
+function toDatabase(
+  data: vulnerabilityRaw | AssetRaw | DefinitionRaw
+): vulnerability | asset | definition {
   let fields;
 
-  if (isVulnerabilityRaw(data.fields)) {
+  if (isVulnerabilityRaw(data)) {
     const dateFields = ["first_observed", "last_seen"];
-    fields = parseDateFields(data.fields, dateFields) as vulnerability;
-  } else if (isAssetRaw(data.fields)) {
+    fields = parseDateFields(data, dateFields) as vulnerability;
+  } else if (isAssetRaw(data)) {
     const dateFields = [
       "first_observed",
       "last_authenticated_scan_time",
@@ -45,17 +69,16 @@ function toDatabase(data: DatabaseRaw): Database {
       "last_scan_time",
       "date_record_added",
     ];
-    fields = parseDateFields(data.fields, dateFields) as asset;
-  } else if (isDefinitionRaw(data.fields)) {
+    fields = parseDateFields(data, dateFields) as asset;
+  } else if (isDefinitionRaw(data)) {
     const dateFields = ["patch_published", "vulnerability_published"];
-    fields = parseDateFields(data.fields, dateFields);
+    fields = parseDateFields(data, dateFields);
     fields = fields as definition;
   } else {
     throw new Error("unrecognized data model type");
   }
   return {
-    ...data,
-    fields: fields,
+    ...fields,
   };
 }
 

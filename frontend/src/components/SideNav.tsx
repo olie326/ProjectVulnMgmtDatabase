@@ -16,15 +16,24 @@ import UploadData from "./UploadData";
 import { userContext } from "@/App";
 import { logout } from "@/api_calls/APIcalls";
 import { useNavigate } from "react-router-dom";
+import { TabsContent } from "./ui/tabs";
+import Home from "@/pages/Home";
+import { SideTabsContent, SideTabsHeader } from "@/pages/SideTab";
+import Dashboard from "@/pages/Database/Database";
+import Settings from "@/pages/Settings";
 
-export default function SideNav({ children }: { children: ReactNode }) {
+export default function SideNav() {
   const [authenticated, setAuthenticated] = useContext(userContext);
   const nagivate = useNavigate();
 
   return (
     <>
-      <Tabs.Root className="flex w-screen" orientation="vertical">
-        <div className="sticky top-0 flex h-svh flex-col justify-between p-2 lg:min-w-48">
+      <Tabs.Root
+        defaultValue="home"
+        className="flex w-screen"
+        orientation="vertical"
+      >
+        <div className="border--border sticky top-0 flex h-screen flex-col justify-between border-x p-2 lg:min-w-48">
           <div>
             <div className="my-3 mb-12 flex items-center justify-center lg:mx-3 lg:justify-between lg:gap-3">
               <NotionLogoIcon height={32} width={32} />
@@ -94,9 +103,16 @@ export default function SideNav({ children }: { children: ReactNode }) {
           </div>
         </div>
 
-        <Tabs.Content value="database" className="min-h-0 min-w-0 flex-1">
-          {children}
-        </Tabs.Content>
+        <SideTabsContent value="database">
+          <Dashboard />
+        </SideTabsContent>
+        <SideTabsContent value="home">
+          <Home />
+        </SideTabsContent>
+        <SideTabsContent value="graphs"></SideTabsContent>
+        <SideTabsContent value="settings">
+          <Settings />
+        </SideTabsContent>
       </Tabs.Root>
     </>
   );

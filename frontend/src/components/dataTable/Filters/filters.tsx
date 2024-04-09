@@ -53,6 +53,14 @@ export default function Filters({
         ) : null
       )}
       <AddFilter filters={Filters} setFilters={setFilters} />
+      {/* <Button
+        onClick={() => {
+          const data = table.getState().rowSelection;
+          console.log(data);
+        }}
+      >
+        test button
+      </Button> */}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import {
   ColumnDef,
   ColumnFiltersState,
+  Row,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -17,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import TablePagination from "./pagnation";
 
 import {
@@ -27,6 +28,10 @@ import {
 } from "@/components/ui/hover-card";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import Filters from "./Filters/filters";
+import { isVulnerability } from "./Types/vulnerability";
+import { isAsset } from "./Types/asset";
+import { isDefinition } from "./Types/definition";
+import { TableContext } from "@/pages/Database/Database";
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData, any>[];
@@ -37,8 +42,24 @@ export default function DataTable<TData>({
   columns,
   data,
 }: DataTableProps<TData>) {
-  const [rowSelection, setRowSelection] = useState({});
+  const [rowSelection, setRowSelection] = useContext(TableContext);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  const myGetRowId = (
+    originalRow: TData,
+    index: number,
+    parent?: Row<TData>
+  ) => {
+    if (isVulnerability(originalRow)) {
+      return originalRow.vulnerability_id;
+    } else if (isAsset(originalRow)) {
+      return originalRow.asset_id;
+    } else if (isDefinition(originalRow)) {
+      return originalRow.definition_id.toString();
+    } else {
+      return index.toString();
+    }
+  };
 
   const [pagination, setPagination] = useState({
     pageIndex: 0, //initial page index
@@ -53,6 +74,7 @@ export default function DataTable<TData>({
     getFilteredRowModel: getFilteredRowModel(),
     onPaginationChange: setPagination,
     onColumnFiltersChange: setColumnFilters,
+    getRowId: myGetRowId,
     enableColumnResizing: false,
     state: {
       rowSelection,

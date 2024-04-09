@@ -1,11 +1,11 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import {
   MagnifyingGlassIcon,
   MixerHorizontalIcon,
 } from "@radix-ui/react-icons";
 import FilterMenu from "./FilterMenu";
-import { Input } from "@/components/ui/input";
+import { Input, Search } from "@/components/ui/input";
 import { Button } from "./ui/button";
 import {
   vulnerability,
@@ -13,26 +13,10 @@ import {
 } from "./dataTable/Types/vulnerability";
 import { asset, AssetRaw } from "./dataTable/Types/asset";
 import { DefinitionRaw, definition } from "./dataTable/Types/definition";
+import { InputProps } from "react-day-picker";
+import { cn } from "@/lib/utils";
 
 axios.defaults.withCredentials = true;
-
-declare global {
-  interface options {
-    [cateory: string]: {
-      [option: string]: string[];
-    };
-  }
-  interface Database {
-    fields: vulnerability | asset | definition;
-    model: "database.vulnerability" | "database.asset" | "database.definition";
-    pk: Number;
-  }
-  interface DatabaseRaw {
-    fields: vulnerabilityRaw | AssetRaw | DefinitionRaw;
-    model: "database.vulnerability" | "database.asset" | "database.definition";
-    pk: Number;
-  }
-}
 
 export default function QueryCreator({
   setData,
@@ -87,10 +71,7 @@ export default function QueryCreator({
         setData={setData}
       /> */}
 
-      <Input type="text" placeholder="Search" />
-      <Button variant="default" size="icon" className="absolute end-7 h-7 w-7">
-        <MagnifyingGlassIcon height={15} width={15} />
-      </Button>
+      <Search />
 
       {/* crud dropdown */}
     </>

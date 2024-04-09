@@ -4,13 +4,17 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 import numpy as np
 import pandas as pd
+
+from database.serializers import VulnerabilitySerializer, AssetSerializer, DefinitionSerializer
 from .models import Asset, Definition, Vulnerability, UserProfile
 from django.core import serializers
 from rest_framework.decorators import api_view
 import json
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from django.contrib.auth.models import User
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
+from django.db.models import ExpressionWrapper, DurationField, F, Avg, Q
 from django.contrib.auth import authenticate, get_user
 from rest_framework.permissions import IsAuthenticated
 
@@ -215,6 +219,28 @@ def set_vulnerability(dataframe, user):
 
     Vulnerability.objects.bulk_create(vulnObjectList, update_conflicts=True, update_fields=update_fields ,unique_fields=['vulnerability_id'])
 
+class send_data(APIView):
+    def get(self, request):
+        user = get_user(request)
+
+        # vulnerabilities = serializers.serialize('json', Vulnerability.objects.select_related('asset', 'definition').filter(user=user).all())
+        # assets = serializers.serialize('json', Asset.objects.filter(user=user).all())
+        # definitions = serializers.serialize('json', Definition.objects.filter(user=user).all())
+
+        vulnerabilities = Vulnerability.objects.select_related('asset', 'definition').filter(user=user).all()
+        assets = Asset.objects.filter(user=user).all()
+        definitions = Definition.objects.filter(user=user).all()
+
+
+        data = {
+              'vulnerability': VulnerabilitySerializer(vulnerabilities, many=True).data,
+              'asset': AssetSerializer(assets, many=True).data,
+              'definition': DefinitionSerializer(definitions, many=True).data
+        }
+        
+        return Response(data)
+
+
 
 class init_send_database(APIView):
     def post(self, request):
@@ -298,14 +324,94 @@ def file_test(request):
     return Response("success!")
 
 @api_view(['POST'])
-def sign_up(request):
+def update_remediation(request):
 
-    print("creating user...")
-    userData = json.loads(request.body.decode('UTF-8'))
+    value = request.data.get("value")
+    rows = request.data.get("rows")
+
+    Vulnerability.objects.filter(vulnerability_id__in=rows).update(state=value)
+
+    return Response("state updated!")
+
+
+@api_view(['POST'])
+def delete_rows(request):
+    variant = request.data.get("variant")
+    rows = request.data.get("rows")
+    if variant == "Vulnerability":
+        Vulnerability.objects.filter(vulnerability_id__in=rows).delete()
+    elif variant == "Asset":
+        Asset.objects.filter(asset_id__in=rows).delete()
+    elif variant == "Definition":
+        Definition.objects.filter(definition_id__in=rows).delete()
+
     
+    return Response("rows deleted!")
 
-    user = User.objects.create_user(**userData)
-    UserProfile.objects.create(user=user)
+@api_view(["GET"])
+def avg_vulnerability_age(request):
+    user = get_user(request)
+    now = timezone.now()
+    vulnerability_first_observed = Vulnerability.objects.filter(
+         user=user
+         ).annotate(
+              age=ExpressionWrapper(
+         now - F('first_observed')
+    ,output_field=DurationField())).aggregate(avg_age=Avg('age'))
+    print(vulnerability_first_observed)
+    return Response("request went through")
 
-    return Response("New account created!")
 
+@api_view(["GET"])
+def open_vulnerability_risk_percentage(request):
+    user = get_user(request)
+
+    total = Vulnerability.objects.filter(Q(user=user) & Q(state="NEW") | Q(state="ACTIVE") | Q(state="RESURFACED")).count()
+
+    critical_amount = Vulnerability.objects.filter(user=user, definition__vpr_score__gte=9).count()
+    exploitable_amount = Vulnerability.objects.filter(user=user, definition__vpr_score__gte=7).count() - critical_amount
+
+
+
+    data = {
+         'critical': critical_amount / total,
+         'exploitable': exploitable_amount / total,
+    }
+
+    print(data)
+
+    return Response(data)
+
+
+def asset_coverage(request):
+    user = get_user(request)
+
+    total = Asset.objects.all().count()
+
+    unique = Asset.objects.filter()
+
+    return
+
+@api_view(["GET"])
+def last_month_vuln(request):
+    user = get_user(request)
+    last_month = timezone.now() - relativedelta(month=1)
+
+    open_since = Vulnerability.objects.filter(user=user, first_observed__gte=last_month).filter(Q(state="NEW") | Q(state="ACTIVE") | Q(state="RESURFACED"))
+    print(open_since)
+    open_since_amt = open_since.count()
+
+    data = {
+        "open_since": VulnerabilitySerializer(open_since, many=True).data,
+        "open_since_amt": open_since_amt
+    }
+
+    return Response(data)
+
+@api_view(["GET"])
+def fixed_vuln(request):
+    user = get_user(request)
+
+    fixed_count = Vulnerability.objects.filter(state="FIXED").count()
+
+    return Response({"fixed_count": fixed_count})
