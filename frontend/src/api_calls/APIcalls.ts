@@ -1,9 +1,10 @@
-import { newUserSchema } from "@/components/authentication/SignUpForm";
-import { userSchema } from "@/components/authentication/LoginForm";
+import { userSchema } from "@/components/authentication/SignUpForm";
+import { loginUserSchema } from "@/components/authentication/LoginForm";
 import axios from "axios";
 import { z } from "zod";
 import { selectSchema } from "@/components/CrudButtons";
 import { ValueSetter } from "node_modules/date-fns/parse/_lib/Setter";
+import { editUserSchema } from "@/pages/Settings/profile";
 
 axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
@@ -62,11 +63,11 @@ export async function sendData(formData: FormData) {
   return response;
 }
 
-const signUp = async (values: z.infer<typeof newUserSchema>) => {
+const signUp = async (values: z.infer<typeof userSchema>) => {
   axios.post("http://127.0.0.1:8000/api/create_account", values);
 };
 
-const logIn = async (values: z.infer<typeof userSchema>) => {
+const logIn = async (values: z.infer<typeof loginUserSchema>) => {
   const response = await axios.post(
     "http://127.0.0.1:8000/api/dj-rest-auth/login/",
     values
@@ -84,6 +85,15 @@ const logout = async () => {
 const getUser = async () => {
   const response = await axios.get(
     "http://127.0.0.1:8000/api/dj-rest-auth/user/"
+  );
+
+  return response;
+};
+
+const updateUser = async (values: z.infer<typeof editUserSchema>) => {
+  const response = await axios.patch(
+    "http://127.0.0.1:8000/api/dj-rest-auth/user/",
+    values
   );
   return response.data;
 };
@@ -127,6 +137,7 @@ export {
   logIn,
   logout,
   getUser,
+  updateUser,
   updateRemediation,
   deleteRows,
   getAge,

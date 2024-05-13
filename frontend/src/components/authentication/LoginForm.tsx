@@ -18,7 +18,7 @@ import { userContext } from "@/App";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
-export const userSchema = z
+export const loginUserSchema = z
   .object({
     username: z.string(),
     password: z.string(),
@@ -33,11 +33,11 @@ export default function LoginForm({
   const [authenticated, setAuthenticated] = useContext(userContext);
   const navigate = useNavigate();
 
-  const form = useForm<z.infer<typeof userSchema>>({
-    resolver: zodResolver(userSchema),
+  const form = useForm<z.infer<typeof loginUserSchema>>({
+    resolver: zodResolver(loginUserSchema),
   });
 
-  async function onSubmit(values: z.infer<typeof userSchema>) {
+  async function onSubmit(values: z.infer<typeof loginUserSchema>) {
     console.log(values);
     const response = await logIn(values);
     if (response.status == 200) {

@@ -186,7 +186,7 @@ export default function UploadData() {
                     </small>
                   ) : null}
                 </div>
-                {/* <DialogClose asChild> */}
+
                 {loading === true ? (
                   <Button type="submit" disabled>
                     <ReloadIcon className="mr-2 animate-spin" />
@@ -195,7 +195,6 @@ export default function UploadData() {
                 ) : (
                   <Button type="submit">Upload</Button>
                 )}
-                {/* </DialogClose> */}
               </div>
             </form>
           </Form>

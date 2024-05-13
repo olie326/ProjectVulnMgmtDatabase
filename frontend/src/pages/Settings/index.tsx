@@ -54,7 +54,7 @@ export default function Settings() {
                 <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
                   User Settings
                 </h3>
-                <p className="text-muted-foreground mt-1 text-sm">
+                <p className="text-muted-foreground mb-7 mt-1 text-sm">
                   Change your user details here.
                 </p>
                 <Profile />

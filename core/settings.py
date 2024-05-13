@@ -104,6 +104,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     )
 }
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'database.serializers.CustomUserDetailsSerializer',
+}
 
 
 # Internationalization

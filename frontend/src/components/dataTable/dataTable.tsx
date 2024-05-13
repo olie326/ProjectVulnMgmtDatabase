@@ -63,7 +63,7 @@ export default function DataTable<TData>({
 
   const [pagination, setPagination] = useState({
     pageIndex: 0, //initial page index
-    pageSize: 10, //default page size
+    pageSize: 30, //default page size
   });
   const table = useReactTable({
     columns,

@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { signUp } from "@/api_calls/APIcalls";
 
-export const newUserSchema = z
+export const userSchema = z
   .object({
     username: z.string().refine((val) => val.length > 4, {
       message: "Username must be longer than 4 characters",
@@ -39,8 +39,8 @@ export default function SignUpForm({
 }: {
   setCurrentForm: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const form = useForm<z.infer<typeof newUserSchema>>({
-    resolver: zodResolver(newUserSchema),
+  const form = useForm<z.infer<typeof userSchema>>({
+    resolver: zodResolver(userSchema),
     defaultValues: {
       username: "",
       password1: "",
@@ -51,7 +51,7 @@ export default function SignUpForm({
     },
   });
 
-  function onSubmit(values: z.infer<typeof newUserSchema>) {
+  function onSubmit(values: z.infer<typeof userSchema>) {
     console.log(values);
     signUp(values).then((response) => {
       console.log(response);
