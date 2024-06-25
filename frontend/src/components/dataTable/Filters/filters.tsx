@@ -15,15 +15,14 @@ export interface filterContext {
 }
 
 export default function Filters({
-  // column,
+
   table,
 }: {
-  // column: Column<any, unknown>;
+
   table: Table<any>;
 }) {
   useEffect(() => {
-    // console.log(table.getState().columnFilters);
-    // console.log(Filters);
+    console.log(table.getState().columnFilters);
   }, [table.getState().columnFilters]);
 
   const defaultFilters = table.getAllColumns().map((column) => {
@@ -35,10 +34,6 @@ export default function Filters({
     filters: defaultFilters,
     active: [],
   });
-
-  // useEffect(() => {
-  //   console.log("filters updated!", Filters);
-  // }, [Filters]);
 
   return (
     <div className="mb-2 flex flex-wrap gap-2">
@@ -53,14 +48,6 @@ export default function Filters({
         ) : null
       )}
       <AddFilter filters={Filters} setFilters={setFilters} />
-      {/* <Button
-        onClick={() => {
-          const data = table.getState().rowSelection;
-          console.log(data);
-        }}
-      >
-        test button
-      </Button> */}
     </div>
   );
 }

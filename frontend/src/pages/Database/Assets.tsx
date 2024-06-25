@@ -4,13 +4,17 @@ import QueryCreator from "@/components/QueryCreator";
 
 import DataTable from "@/components/dataTable/dataTable";
 
-import { useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { asset } from "@/components/dataTable/Types/asset";
 import { assetColumns } from "@/components/dataTable/columns";
 import { dataContext } from "@/App";
+import { filterContext } from "@/components/dataTable/Filters/filters";
+
+export const FilterContext = createContext<[filterContext, React.Dispatch<React.SetStateAction<filterContext>>]>([{filters: [], active: []}, ()=>{}]);
 
 export default function Assets() {
   const [data, setData] = useContext(dataContext);
+  const [filters, setFilters] = useContext(FilterContext);
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col">
@@ -23,8 +27,10 @@ export default function Assets() {
             <QueryCreator setData={setData} />
           </div>
         </div>
-
-        <DataTable data={data.asset} columns={assetColumns}></DataTable>
+      <FilterContext.Provider value={[filters, setFilters]}>
+         <DataTable data={data.asset} columns={assetColumns}></DataTable>
+      </FilterContext.Provider>
+       
       </div>
     </div>
   );

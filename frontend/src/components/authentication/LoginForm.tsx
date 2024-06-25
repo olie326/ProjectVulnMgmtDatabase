@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { logIn } from "@/api_calls/APIcalls";
-import { userContext } from "@/App";
+import { userAuthenticatedContext } from "@/App";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -30,7 +30,7 @@ export default function LoginForm({
 }: {
   setCurrentForm: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const [authenticated, setAuthenticated] = useContext(userContext);
+  const [authenticated, setAuthenticated] = useContext(userAuthenticatedContext);
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof loginUserSchema>>({

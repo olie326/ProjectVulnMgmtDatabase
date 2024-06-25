@@ -5,15 +5,16 @@ import "./App.css";
 import { createContext, useEffect, useState } from "react";
 import { getData } from "./api_calls/get_data";
 import SideNav from "./components/SideNav";
+import HomePage from "./pages/HomePage";
 
-type userContextState = [
+type userAuthenticatedContextState = [
   boolean,
   React.Dispatch<React.SetStateAction<boolean>>,
 ];
 
 type DataContext = [Data, React.Dispatch<React.SetStateAction<Data>>];
 
-export const userContext = createContext<userContextState>([false, () => {}]);
+export const userAuthenticatedContext = createContext<userAuthenticatedContextState>([false, () => {}]);
 export const dataContext = createContext<DataContext>([
   {
     vulnerability: [],
@@ -41,12 +42,12 @@ function App() {
 
   return (
     <dataContext.Provider value={[data, setData]}>
-      <userContext.Provider value={[authenticated, setAuthenticated]}>
+      <userAuthenticatedContext.Provider value={[authenticated, setAuthenticated]}>
         <Routes>
           <Route index path="login" element={<Landing />} />
-          <Route path="dashboard" element={<SideNav />} />
+          <Route path="dashboard" element={<HomePage />} />
         </Routes>
-      </userContext.Provider>
+      </userAuthenticatedContext.Provider>
     </dataContext.Provider>
   );
 }

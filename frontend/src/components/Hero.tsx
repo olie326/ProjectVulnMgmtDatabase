@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import LoginForm from "./authentication/LoginForm";
 import SignUpForm from "./authentication/SignUpForm";
 import { ScrollArea } from "./ui/scroll-area";
-import { userContext } from "@/App";
+import { userAuthenticatedContext } from "@/App";
 import { getUser } from "@/api_calls/APIcalls";
 import { useNavigate } from "react-router-dom";
 
 export default function Hero() {
   const [currentForm, setCurrentForm] = useState("signIn");
-  const [authenticated, setAuthenticated] = useState(userContext);
+  const [authenticated, setAuthenticated] = useState(userAuthenticatedContext);
 
   return (
     <>

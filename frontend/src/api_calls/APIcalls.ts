@@ -5,6 +5,7 @@ import { z } from "zod";
 import { selectSchema } from "@/components/CrudButtons";
 import { ValueSetter } from "node_modules/date-fns/parse/_lib/Setter";
 import { editUserSchema } from "@/pages/Settings/profile";
+import { userData } from "@/pages/Database/Database";
 
 axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
@@ -83,7 +84,7 @@ const logout = async () => {
 };
 
 const getUser = async () => {
-  const response = await axios.get(
+  const response = await axios.get<userData>(
     "http://127.0.0.1:8000/api/dj-rest-auth/user/"
   );
 

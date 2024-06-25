@@ -7,34 +7,28 @@ import Vulnerabilities from "./Vulnerabilties";
 import Assets from "./Assets";
 import Definitions from "./Definitions";
 import { Button } from "@/components/ui/button";
-import { createContext, useContext, useEffect, useState } from "react";
-import { userContext } from "@/App";
+import { SetStateAction, createContext, useContext, useEffect, useState } from "react";
+import { userAuthenticatedContext } from "@/App";
 import { getUser } from "@/api_calls/APIcalls";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { SideTabsContent } from "../SideTab";
 
 type tableStateContext = [{}, React.Dispatch<React.SetStateAction<{}>>];
+export type userData = {
+  pk: number;
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+};
 
 export const TableContext = createContext<tableStateContext>([{}, () => {}]);
 
 function Dashboard() {
+  
   const [table, setTable] = useState({});
-  const [authenticated, setAuthenticated] = useContext(userContext);
-  const nagivate = useNavigate();
-
-  useEffect(() => {
-    getUser()
-      .catch((error) => {
-        console.log(error);
-        nagivate("/login");
-      })
-      .then((response) => {
-        console.log(response);
-        console.log("rerender!");
-        setAuthenticated(true);
-      });
-  }, []);
+  const [authenticated, setAuthenticated] = useContext(userAuthenticatedContext);
 
   useEffect(() => {
     console.log("table seleced updated!");
@@ -44,7 +38,6 @@ function Dashboard() {
     <div className="m-6 flex max-h-full flex-col">
       <Tabs
         defaultValue="vulnerability"
-        // className="bg-secondary box-border flex min-h-0 min-w-0 flex-col p-2"
       >
         <div className="mb-4 flex justify-between">
           <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">

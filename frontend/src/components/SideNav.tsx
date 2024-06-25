@@ -13,7 +13,7 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { Button } from "./ui/button";
 import { ReactNode, useContext } from "react";
 import UploadData from "./UploadData";
-import { userContext } from "@/App";
+import { userAuthenticatedContext } from "@/App";
 import { logout } from "@/api_calls/APIcalls";
 import { useNavigate } from "react-router-dom";
 import { TabsContent } from "./ui/tabs";
@@ -23,7 +23,7 @@ import Dashboard from "@/pages/Database/Database";
 import Settings from "@/pages/Settings";
 
 export default function SideNav() {
-  const [authenticated, setAuthenticated] = useContext(userContext);
+  const [authenticated, setAuthenticated] = useContext(userAuthenticatedContext);
   const nagivate = useNavigate();
 
   return (

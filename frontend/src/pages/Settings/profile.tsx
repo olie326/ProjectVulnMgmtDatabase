@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-type userData = {
+export type userData = {
   pk: number;
   username: string;
   email: string;

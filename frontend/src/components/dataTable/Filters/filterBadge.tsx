@@ -57,10 +57,6 @@ export default function FilterBadge<T>({
     updateFilterValue(e.target.value, setFilterVal, id, table);
   }
 
-  // useEffect(() => {
-  //   console.log("columnFIlters: ", table.getState().columnFilters);
-  // }, [range]);
-
   return (
     <Popover key={id}>
       <PopoverTrigger asChild>
