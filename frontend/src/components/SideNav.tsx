@@ -23,7 +23,9 @@ import Dashboard from "@/pages/Database/Database";
 import Settings from "@/pages/Settings";
 
 export default function SideNav() {
-  const [authenticated, setAuthenticated] = useContext(userAuthenticatedContext);
+  const [authenticated, setAuthenticated] = useContext(
+    userAuthenticatedContext
+  );
   const nagivate = useNavigate();
 
   return (

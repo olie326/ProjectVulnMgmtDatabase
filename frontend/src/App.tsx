@@ -14,7 +14,8 @@ type userAuthenticatedContextState = [
 
 type DataContext = [Data, React.Dispatch<React.SetStateAction<Data>>];
 
-export const userAuthenticatedContext = createContext<userAuthenticatedContextState>([false, () => {}]);
+export const userAuthenticatedContext =
+  createContext<userAuthenticatedContextState>([false, () => {}]);
 export const dataContext = createContext<DataContext>([
   {
     vulnerability: [],
@@ -42,7 +43,9 @@ function App() {
 
   return (
     <dataContext.Provider value={[data, setData]}>
-      <userAuthenticatedContext.Provider value={[authenticated, setAuthenticated]}>
+      <userAuthenticatedContext.Provider
+        value={[authenticated, setAuthenticated]}
+      >
         <Routes>
           <Route index path="login" element={<Landing />} />
           <Route path="dashboard" element={<HomePage />} />
