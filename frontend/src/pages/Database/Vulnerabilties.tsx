@@ -6,9 +6,11 @@ import DataTable from "@/components/dataTable/dataTable";
 import { vulnerability } from "@/components/dataTable/Types/vulnerability";
 import { useContext, useEffect, useState } from "react";
 import { dataContext } from "@/App";
+import { tableContext } from "../HomePage";
 
 export default function Vulnerabilities() {
   const [data, setData] = useContext(dataContext);
+  const VulnerabilityData = useContext(tableContext).Vulnerabilities;
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col">
@@ -22,7 +24,12 @@ export default function Vulnerabilities() {
           </div>
         </div>
 
-        <DataTable data={data.vulnerability} columns={vulnColumns}></DataTable>
+        <DataTable
+          data={data.vulnerability}
+          columns={vulnColumns}
+          tableContextProps={VulnerabilityData.tableContextProps}
+          setTableContextProps={VulnerabilityData.setTableContextProps}
+        ></DataTable>
       </div>
     </div>
   );

@@ -32,17 +32,22 @@ import { isVulnerability } from "./Types/vulnerability";
 import { isAsset } from "./Types/asset";
 import { isDefinition } from "./Types/definition";
 import { TableContext } from "@/pages/Database/Database";
+import { setTableContextProps, tableContextProps } from "@/pages/HomePage";
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData, any>[];
   data: TData[];
+  tableContextProps: tableContextProps;
+  setTableContextProps: setTableContextProps;
 }
 
 export default function DataTable<TData>({
   columns,
   data,
+  tableContextProps,
+  setTableContextProps,
 }: DataTableProps<TData>) {
-  const [rowSelection, setRowSelection] = useContext(TableContext);
+  // const [rowSelection, setRowSelection] = useContext(TableContext);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const myGetRowId = (
@@ -69,23 +74,25 @@ export default function DataTable<TData>({
     columns,
     data,
     getCoreRowModel: getCoreRowModel(),
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: setTableContextProps.setRowSelection,
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onPaginationChange: setPagination,
-    onColumnFiltersChange: setColumnFilters,
+    onPaginationChange: setTableContextProps.setPagination,
+    onColumnFiltersChange: setTableContextProps.setColumnFilters,
     getRowId: myGetRowId,
     enableColumnResizing: false,
     state: {
-      rowSelection,
-      pagination,
-      columnFilters,
+      ...tableContextProps,
     },
   });
 
   return (
     <>
-      <Filters table={table} />
+      <Filters
+        table={table}
+        filterContext={tableContextProps.filterContext}
+        setFilterContext={setTableContextProps.setFilterContext}
+      />
       <ScrollArea className="rounded-lg border">
         <Table className="relative">
           <TableHeader className="sticky top-0">
